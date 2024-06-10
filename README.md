@@ -25,6 +25,22 @@ These are example text files taken from evaluated nuclear data tables found on t
 
 The data files contain columns corresponding to the $\gamma$-ray energy (EG), the relative decay intensity (RI), the multipolarity of the transition (MULT), the mixing ratio (MR), the internal conversion coefficient (CC), both the parent and daughter level energies as well as their respective spins and parities. The two most important quantities for our purposes are the energies $E_{\gamma}$ of the transitions and the (relative) $\gamma$ decay intensity $I_{\gamma}$. 
 
-## NuclearObject.py
+## NuclearObjects.py
 
-This file contains a variety of different classes that are useful for representing nuclear data structures.
+This file contains a variety of classes used to represent nuclear physics data structures. For example, the Gamma object is the most fundamental structure, storing information about each individual $\gamma$-ray transition. The Level object contains all incoming and outgoing Gamma objects from a particular excited state in the nucleus. The LevelScheme object contains all Level objects, which are represented by a graphical network, whose edges have corresponding Gammas. Similarly, the TransitionScheme obeject centers Gammas as the vertices within the graphical representation.
+
+## GetMatricesSCA.py
+
+This file contains Python codes that parses the data files and constructs the graphical representation of the level scheme. Once a consistent graph has been populated representing the level scheme, a series of functions are used to create simulated data that would ordinarily be obtained from a real experiment. The $\textit{singles}$ matrix $S$ is just a vector containing the intensities of each of the $\gamma$-ray transitions, indexed by their energy $E_{\gamma}$ and scaled by some normalization factor provided by the user. The $\textit{undirected coincidence}$ matrix $C$ represents the analyzed result of a two-dimensional histogram from all $\gamma-\gamma$ coincidences measured in an experiment. The elements of this matrix $C_{ij}$ are the number of times $\gamma_i$ is observed to occur at the same time as $\gamma_j$. The $A$ matrix is reconstructed from the known level structure and is populated with $\gamma$-ray branching ratios. This code here uses the $A$ matrix as the jumping off point to create a TransitionScheme obect, which is then mapped to a LevelScheme object using physics constraints. The final result is then compared to the original graph to ensure this mapping process is robust.
+
+## Plotting.py
+
+This Python code gives the graphical specifications for plotting graphs using the networkx package.
+
+## LvlSchemeBuilder.ipynb
+
+This is an example Jupyter notebook that walks through the process of parsing the text files containing the nuclear data, constructing a LSGraph object, which is used to generate the $S$, $C$, and $A$ matrices, which we would ordinarily want to get from real data, but for testing purposes are calculated from evaluated data tables. From this $A$ matrix, a series of functions are used to construct a transition-centric decay scheme graph, and imposing physics conditions, we are able to map this to level-centric space and plot the corresponding graph. This algorithm demonstrates that we can reliably reproduce the LSGraph pulled directly from the data, if the adjacency matrix $A$ is correct.
+
+First, the text files are parsed and an LSGraph is created, representing each nuclear level as a vertex, with edges between them corresponding to $\gamma$-ray transitions. Printing the level scheme shows each level, all of its outgoing $\gamma$ rays and their properties. This LSGraph object is used to calculate the $S$, $C$, and $A$ matrices. To create TransitionScheme, we identify all the non-zero elements in the $A$ matrix, which in transition space corresponds to two nodes, connected by an edge, where row $i$ for each element is the intial transition $\gamma_i$ and column $j$ is the following transition $\gamma_j$. The number of non-zero elements in a row $i$ is the number of possible nodes $j$ that are populated following $\gamma_i$ decay. All leaf nodes are identified, i.e. $\gamma$-ray transition nodes that are populated by a previous decay but do not populate any further nodes, implying they are likely ground-state transitions. Then, we can calculate all possible paths from any $\gamma_i$ to $\gamma_j$, if they are possible.
+
+To recover a LevelScheme from the TransitionScheme space, we loop over all edges that occur in the TransitionScheme graph and place a new node, which corresponds to a level who has both incoming and outgoing gamma rays.
