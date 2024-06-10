@@ -21,3 +21,10 @@ Below is a brief description of the purpose and functionality of each of the fil
 
 ## Ta182_beta.gam and Am241.gam
 
+These are example text files taken from evaluated nuclear data tables found on the International Atomic Energy Agency's website: https://www-nds.iaea.org/relnsd/vcharthtml/VChartHTML.html
+
+The data files contain columns corresponding to the $\gamma$-ray energy (EG), the relative decay intensity (RI), the multipolarity of the transition (MULT), the mixing ratio (MR), the internal conversion coefficient (CC), both the parent and daughter level energies as well as their respective spins and parities. The two most important quantities for our purposes are the energies $E_{\gamma}$ of the transitions and the (relative) $\gamma$ decay intensity $I_{\gamma}$. 
+
+## NuclearObject.py
+
+This file contains a variety of different classes that are useful for representing nuclear data structures.
